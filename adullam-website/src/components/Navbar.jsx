@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import {HashLink as Link} from 'react-router-hash-link'
 import adullamLogo from '../assets/adullam.svg'
 
 function Navbar() {
@@ -10,9 +10,9 @@ function Navbar() {
             </Link>
 
             <nav className="flex space-x-6">
-                <Link href='/#about' className='hover:text-gray-40'>About Us</Link>
-                <Link href='/#programs' className='hover:text-gray-400'>Programs</Link>
-                <Link to='/#contact' className='hover:text-gray-400'>Contact Us</Link>
+                <Link smooth to='/#about' className='hover:text-gray-400'>About Us</Link>
+                <Link smooth to='/#programs' className='hover:text-gray-400'>Programs</Link>
+                <Link smooth to='/#contact' className='hover:text-gray-400'>Contact Us</Link>
                 <Link to='/give' className='hover:text-gray-400'>Give</Link>
 
             </nav>
