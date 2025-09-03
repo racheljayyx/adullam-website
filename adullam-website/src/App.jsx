@@ -1,19 +1,26 @@
-import { useState } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
+import Home from './pages/Home.jsx'
+import Give from './pages/Give.jsx'
+import NotFound from './pages/NotFound.jsx'
+import AppLayout from './layouts/AppLayout.jsx'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <AppLayout />,
+    children: [
+      {index: true, element: <Home /> }, 
+      {path: 'Give', element: <Give /> },
+      {path: '*', element: <NotFound /> },
+    ],
+  },
+])
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-   <div className='bg-white min-h-screen'>
-      <Navbar />
-      <main className="p-6">
-        <h1 className="text-2xl font-bold">Welcome to Adullam Academy</h1>
-      </main>
-   </div>
-  
-  )
+  return  <RouterProvider router={router} />;
 }
 
 export default App
