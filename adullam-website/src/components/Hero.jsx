@@ -45,7 +45,7 @@ function Hero() {
                     OUR PROGRAMS
                 </button>
             </Link>
-            {/* TODO: add link to WhatsApp sign up form  */}
+            {/* TODO [AW-19]: add link to WhatsApp sign up form  */}
             <Link>
                 <button className='bg-white text-[#C0AA95] px-4 py-1.5 rounded-full hover:opacity-90 transition w-60'>
                     JOIN THE FAMILY
