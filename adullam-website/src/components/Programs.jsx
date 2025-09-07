@@ -54,9 +54,12 @@ function Programs() {
           </h3>
 
           <p className='pt-6 sm:pt-10 pb-8 text-base sm:text-lg lg:text-xl leading-relaxed'>
-            <span className='font-bold'>9:00-9:15 PM:</span> Bible Reading <br />
-            <span className='font-bold'>9:15-10:45 PM:</span> Prayer <br />
-            <span className='font-bold'>10:45-11:00 PM:</span> Book Reading <br />
+            <span className='font-bold'>9:00-9:15 PM:</span> Bible Reading 
+            <br />
+            <span className='font-bold'>9:15-10:45 PM:</span> Prayer 
+            <br />
+            <span className='font-bold'>10:45-11:00 PM:</span> Book Reading 
+            <br />
             Building daily discipline and sensitivity to the Holy Spirit.
           </p>
 
@@ -84,14 +87,19 @@ function Programs() {
           </h3>
 
           <p className='pt-6 pb-4 text-base sm:text-lg lg:text-xl leading-relaxed'>
-            <span className='font-bold'>FRIDAYS | 5-11PM</span> <br />
-            Dunkirk &amp; Old Lenton Community Centre, <span className='font-bold'>NG7 2JW</span>
+            <span className='font-bold'>FRIDAYS | 5-11PM</span> 
+            <br />
+            Dunkirk &amp; Old Lenton Community Centre,
+             <span className='font-bold'>NG7 2JW</span>
           </p>
 
           <p className='text-base sm:text-lg lg:text-xl leading-relaxed'>
-            Join us weekly in-person for worship, teaching and prayer integrated around the three <br className='hidden sm:block' />
-            focus areas: identity, abilities, responsibilities. This is an immersive and spirit-led space for group <br className='hidden sm:block' />
-            ministry, activation and prophetic encouragement. You'll experience spiritual refreshment, <br className='hidden sm:block' />
+            Join us weekly in-person for worship, teaching and prayer integrated around the three 
+            <br className='hidden sm:block' />
+            focus areas: identity, abilities, responsibilities. This is an immersive and spirit-led space for group 
+            <br className='hidden sm:block' />
+            ministry, activation and prophetic encouragement. You'll experience spiritual refreshment,
+             <br className='hidden sm:block' />
             grounding and fellowship in the local community.
           </p>
         </div>
