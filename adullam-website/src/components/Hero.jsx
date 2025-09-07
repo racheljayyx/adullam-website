@@ -24,7 +24,7 @@ function Hero() {
       </section>
 
       <div className='w-full h-auto flex flex-col justify-end text-center px-6 md:px-10 py-16 md:py-20 text-white bg-[#C0AA95]'>
-        <h1 className='text-4xl md:text-6xl lg:text-8xl mb-6 leading-snug'>
+        <h1 className='text-4xl md:text-6xl lg:text-8xl mb-1 leading-tight'>
           Rooted. <br /> Empowered. <br /> Sent.
         </h1>
         <p className='text-base md:text-lg lg:text-xl leading-relaxed'>
