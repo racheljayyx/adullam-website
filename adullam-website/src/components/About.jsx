@@ -10,10 +10,10 @@ function About() {
           <div className='w-full md:w-1/3 h-auto flex flex-col text-left px-8 py-12 text-white bg-black rounded-lg'>
             <h1 className='text-6xl md:text-4xl mb-6'>Our Mission</h1>
             <p className='py-6'>
-              To raise a people of consistency in <br />
-              spiritual routines through discipleship,<br />
-              who have a clear understanding of our <br />
-              identity, abilities, and responsibilities <br />
+              To raise a people of consistency in
+              spiritual routines through discipleship,
+              who have a clear understanding of our
+              identity, abilities, and responsibilities
               because of what Christ has done.
             </p>
           </div>
@@ -22,12 +22,9 @@ function About() {
             <h1 className='text-6xl md:text-4xl mb-6'>Our Vision</h1>
             <p className='py-6'>
               To raise a generation of Christ-
-              <br />
               centred believers who know their
-              <br />
               identity, and walk in Spirit-empowered
-              <br />
-              abilities, and fulfill their <br />
+              abilities, and fulfill their
               responsibilities with clarity and love.
             </p>
           </div>
@@ -100,11 +97,11 @@ function About() {
         >
           <p className='leading-relaxed'>
             “David left Gath and escaped to the cave of Adullam. When his
-            brothers and his father's <br />
+            brothers and his father's
             household heard about it, they went down to him there. All those who
-            were in distress or <br />
+            were in distress or
             in debt or discontented gathered around him, and he became their
-            commander. <br />
+            commander.
             About four hundred men were with him.”
           </p>
           <p className='pt-5 font-bold'>1 Samuel 22:1-2</p>
