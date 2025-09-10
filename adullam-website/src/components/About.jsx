@@ -11,10 +11,10 @@ function About() {
             <h1 className='text-6xl md:text-4xl mb-6'>Our Mission</h1>
             <p className='py-6'>
               To raise a people of consistency in <br />
-              spiritual routines through <br />
-              discipleship, who have a clear <br />
-              understanding of our redemption <br />
-              (what Christ has done).
+              spiritual routines through discipleship,<br />
+              who have a clear understanding of our <br />
+              identity, abilities, and responsibilities <br />
+              because of what Christ has done.
             </p>
           </div>
 
