@@ -28,7 +28,7 @@ function Footer() {
             href='mailto:contact@adullamacademy.co.uk'
             className='hover:underline'
           >
-            admin@adullamacademy.co.uk
+            contact@adullamacademy.co.uk
           </a>
         </div>
       </div>
