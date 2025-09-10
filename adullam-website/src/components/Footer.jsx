@@ -11,7 +11,7 @@ function Footer() {
           <p>Company number 16153693</p>
         </div>
 
-        <div className='flex space-x-6'>D
+        <div className='flex space-x-6'>
           <a
             href='https://www.instagram.com/theadullamacademy?igsh=dHJidXdnbGx2ODU1'
             target='_blank'
