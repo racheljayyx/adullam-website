@@ -25,7 +25,7 @@ function Footer() {
         <div className='flex items-center space-x-2'>
           <EnvelopeIcon className='h-5 w-5 text-[#C0AA95]' />
           <a
-            href='mailto:admin@adullamacademy.co.uk'
+            href='mailto:contact@adullamacademy.co.uk'
             className='hover:underline'
           >
             admin@adullamacademy.co.uk
