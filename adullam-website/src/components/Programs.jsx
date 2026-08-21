@@ -11,11 +11,69 @@ function Programs() {
 
       <div
         className='w-full rounded-2xl bg-cover bg-center text-center text-white overflow-hidden transform transition duration-500 md:hover:scale-105 md:hover:shadow-xl'
+        style={{ backgroundImage: `url(${prayerImg})` }}
+      >
+        <div className='bg-black/60 md:hover:bg-black/50 transition duration-500 w-full p-6 sm:p-10'>
+          <h2 className='inline-block border border-white px-3 py-1 text-sm sm:text-base'>
+            DAILY PRAYER
+          </h2>
+
+          <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-bold'>
+            PRAYER CALL
+          </h3>
+
+          <p className='pt-6 sm:pt-10 pb-8 text-base sm:text-lg lg:text-xl leading-relaxed'>
+            <span className='font-bold'>9:00 PM - 10:00 PM:</span> Prayer 
+            <br />
+            Building daily discipline and sensitivity to the Holy Spirit.
+          </p>
+
+          <a
+            href='https://bit.ly/adullammeeting'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='bg-white text-black font-bold px-6 py-2 rounded-full transition transform duration-300 hover:scale-105 hover:opacity-90 active:scale-95 w-full sm:w-auto'>
+            Let's Pray
+          </a>
+        </div>
+      </div>
+
+      <div
+        className='w-full rounded-2xl bg-cover bg-center text-center text-white overflow-hidden transform transition duration-500 md:hover:scale-105 md:hover:shadow-xl'
+        style={{ backgroundImage: `url(${prayerImg})` }}
+      >
+        <div className='bg-black/60 md:hover:bg-black/50 transition duration-500 w-full p-6 sm:p-10'>
+          <h2 className='inline-block border border-white px-3 py-1 text-sm sm:text-base'>
+            WEEKLY PRAYER
+          </h2>
+
+          <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-bold'>
+            PRAYER CALL
+          </h3>
+
+          <p className='pt-6 sm:pt-10 pb-8 text-base sm:text-lg lg:text-xl leading-relaxed'>
+            <span className='font-bold'>9:00 PM - 00:00 AM:</span> Prayer 
+            <br />
+            Building daily discipline and sensitivity to the Holy Spirit.
+          </p>
+
+          <a
+            href='https://bit.ly/adullammeeting'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='bg-white text-black font-bold px-6 py-2 rounded-full transition transform duration-300 hover:scale-105 hover:opacity-90 active:scale-95 w-full sm:w-auto'>
+            Let's Pray
+          </a>
+        </div>
+      </div>
+
+      <div
+        className='w-full rounded-2xl bg-cover bg-center text-center text-white overflow-hidden transform transition duration-500 md:hover:scale-105 md:hover:shadow-xl'
         style={{ backgroundImage: `url(${bibleImg})` }}
       >
         <div className='bg-black/60 md:hover:bg-black/50 transition duration-500 w-full p-6 sm:p-10'>
           <h2 className='inline-block border border-white px-3 py-1 text-sm sm:text-base'>
-            BIBLE STUDY
+            WEEKLY BIBLE STUDY
           </h2>
 
           <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-light'>
@@ -23,7 +81,7 @@ function Programs() {
           </h3>
 
           <p className='pt-6 sm:pt-10 pb-8 text-base sm:text-lg lg:text-xl leading-relaxed'>
-            We meet online at 7-9AM every Saturday Morning for Bible Study, Teaching and Discussion.
+            We meet online at 07:00 AM to 09:00 AM every Saturday Morning for Bible Study, Teaching and Discussion.
             <br className='hidden sm:block' />
             This will deepen your Biblical understanding, personal conviction, and application.
             <br className='hidden sm:block' />
@@ -39,26 +97,22 @@ function Programs() {
           </a>
         </div>
       </div>
-
+    
       <div
         className='w-full rounded-2xl bg-cover bg-center text-center text-white overflow-hidden transform transition duration-500 md:hover:scale-105 md:hover:shadow-xl'
         style={{ backgroundImage: `url(${prayerImg})` }}
       >
         <div className='bg-black/60 md:hover:bg-black/50 transition duration-500 w-full p-6 sm:p-10'>
           <h2 className='inline-block border border-white px-3 py-1 text-sm sm:text-base'>
-            DAILY PRAYER
+            WEEKLY FASTING
           </h2>
 
-          <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-bold'>
-            THE FORGE
+          <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-light'>
+            Fast together <span className='font-bold'>every Thursday</span> (Breakfast Fast)
           </h3>
 
           <p className='pt-6 sm:pt-10 pb-8 text-base sm:text-lg lg:text-xl leading-relaxed'>
-            <span className='font-bold'>9:00-9:15 PM:</span> Bible Reading 
-            <br />
-            <span className='font-bold'>9:15-10:45 PM:</span> Prayer 
-            <br />
-            <span className='font-bold'>10:45-11:00 PM:</span> Book Reading 
+            <span className='font-bold'>9:00 PM - 00:00 AM:</span> Prayer 
             <br />
             Building daily discipline and sensitivity to the Holy Spirit.
           </p>
@@ -83,7 +137,7 @@ function Programs() {
           </h2>
 
           <h3 className='pt-6 sm:pt-8 text-3xl sm:text-5xl lg:text-7xl font-bold'>
-            ROOTED
+            THE CALL
           </h3>
 
           <p className='pt-6 pb-4 text-base sm:text-lg lg:text-xl leading-relaxed'>
