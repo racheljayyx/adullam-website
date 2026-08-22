@@ -53,7 +53,6 @@ const programs = [
       </>
     ),
     details: <p>Building daily discipline and sensitivity to the Holy Spirit.</p>,
-    action: "Let's Pray",
   },
   {
     frequency: 'Friday evenings',
