@@ -29,7 +29,7 @@ function Hero() {
         </h1>
         <p className='text-base md:text-lg lg:text-xl leading-relaxed'>
           Adullam is an online Christian Discipleship Platform <br />
-          that organises regular prayer retreats in Nottingham, University Kingdom.
+          that organises regular prayer retreats in Nottingham, United Kingdom.
         </p>
 
         <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 justify-center mt-8'>
