@@ -55,24 +55,44 @@ const programs = [
     details: <p>Building daily discipline and sensitivity to the Holy Spirit.</p>,
   },
   {
-    frequency: 'Friday evenings',
-    category: 'In-person gathering',
+    frequency: 'Quarterly Meetings',
+    category: 'Hybrid, in person and online',
     title: 'The Call',
     details: (
       <>
         <p className='mb-6'>
-          <span className='font-bold'>FRIDAYS | 5-11PM</span>
+          <span className='font-bold'>SEPT 25-27</span>
+        </p>
+        <p className='mb-6'>
+          <span className='font-bold'>ONLINE</span>
           <br />
-          Dunkirk &amp; Old Lenton Community Centre, <span className='font-bold'>NG7 2JW</span>
+          FRI 7PM - 10PM
+          <br />
+          SAT 7PM - 10PM
+        </p>
+        <p className='mb-6'>
+          <span className='font-bold'>IN PERSON</span>
+          <br />
+          SAT 8AM - 4PM
+          <br />
+          SUN 8AM - 4PM
         </p>
         <p>
-          Join us weekly in-person for worship, teaching and prayer integrated around the three
-          focus areas: identity, abilities, responsibilities. This is an immersive and spirit-led space for group
-          ministry, activation and prophetic encouragement. You'll experience spiritual refreshment,
-          grounding and fellowship in the local community.
+          <span className='font-bold'>Location:</span>
+          <br />
+          <br />
+          Monica Partridge Building,
+          <br />
+          University Park Campus,
+          <br />
+          NOTTINGHAM,
+          <br />
+          NG7 2BF
         </p>
       </>
     ),
+    action: 'Sign Up',
+    actionUrl: 'https://tinyurl.com/thecallretreat2026',
   },
 ]
 
@@ -122,7 +142,7 @@ function Programs() {
 
                 {program.action && (
                   <a
-                    href='https://bit.ly/adullammeeting'
+                    href={program.actionUrl || 'https://bit.ly/adullammeeting'}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='mt-8 inline-flex w-fit items-center rounded-full bg-black px-6 py-3 font-bold text-white transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black active:translate-y-0 motion-reduce:transform-none motion-reduce:transition-none'
