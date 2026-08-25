@@ -14,7 +14,7 @@ const programs = [
   },
   {
     frequency: 'Every week',
-    category: 'Weekly prayer',
+    category: 'Weekly prayer Saturday evening',
     title: 'Prayer Call',
     details: (
       <p>
