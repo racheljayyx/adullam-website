@@ -40,7 +40,7 @@ function Mentoring() {
           <div className='mt-8 border-t border-black/20 pt-8'>
             <h2 className='text-lg font-bold sm:text-xl'>How to Apply:</h2>
             <p className='mt-2 text-base leading-relaxed sm:text-lg'>
-              If you&apos;re interested, send Ope a direct WhatsApp DM or text message to express your interest.
+              If you&apos;re interested, kindly complete the application form and send to mentor@adullamacademy.co.uk.
             </p>
             <a
               href='/adullam-academy-mentoring-application-2026-27.pdf'
