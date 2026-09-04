@@ -39,12 +39,11 @@ function Hero() {
             </button>
           </Link>
 
-          {/* TODO [AW-19]: add link to WhatsApp sign up form */}
-          <Link>
+          <a href='https://bit.ly/adullamchristiannetwork'>
             <button className='bg-white text-[#C0AA95] px-6 py-2 md:py-3 rounded-full hover:opacity-90 transition w-full md:w-60'>
               JOIN THE FAMILY
             </button>
-          </Link>
+          </a>
         </div>
       </div>
     </>
