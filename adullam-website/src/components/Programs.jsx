@@ -154,6 +154,61 @@ function Programs() {
             </article>
           )
         })}
+
+        <div className='pt-10 sm:pt-14'>
+          <h2 className='pb-9 text-center text-2xl sm:text-3xl'>
+            ADULLAM NOTTINGHAM
+          </h2>
+
+          <article className='grid overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-black/25 hover:shadow-lg motion-reduce:transition-none md:grid-cols-2'>
+            <div className='flex min-h-80 flex-col justify-between bg-black p-7 text-white sm:p-10 lg:min-h-[32rem] lg:p-12'>
+              <div className='flex items-center gap-3'>
+                <span className='h-px w-8 bg-[#C0AA95]' aria-hidden='true' />
+                <p className='text-xs font-semibold uppercase tracking-[0.2em] text-[#E3D6C8] sm:text-sm'>
+                  In-person event
+                </p>
+              </div>
+
+              <div>
+                <p className='text-xs font-bold uppercase tracking-[0.2em] text-white/60 sm:text-sm'>
+                  1st Saturday of every month
+                </p>
+                <h3 className='mt-5 max-w-2xl text-4xl font-light leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl'>
+                  Monthly Prayer &amp; Worship Meeting
+                </h3>
+                <p className='mt-6 text-xl font-semibold text-[#E3D6C8] sm:text-2xl'>
+                  7:00 PM – 12:00 AM
+                </p>
+              </div>
+            </div>
+
+            <div className='flex min-h-80 flex-col justify-between bg-[#E3D6C8] p-7 text-black sm:p-10 lg:min-h-[32rem] lg:p-12'>
+              <div>
+                <p className='text-xs font-bold uppercase tracking-[0.2em] text-black/60 sm:text-sm'>
+                  Location
+                </p>
+                <h3 className='mt-4 text-2xl font-semibold sm:text-3xl'>
+                  Dunkirk Community Centre
+                </h3>
+                <address className='mt-3 max-w-md text-base not-italic leading-relaxed sm:text-lg'>
+                  The Old School, Montpelier Rd, Dunkirk, Nottingham
+                  <br />
+                  NG7 2JW
+                </address>
+
+                <p className='mt-8 max-w-xl text-base leading-relaxed sm:text-lg'>
+                  Join us for a powerful evening of intercession, extended
+                  worship, and spiritual renewal. In-person at Dunkirk Community
+                  Centre.
+                </p>
+              </div>
+
+              <p className='mt-10 border-t border-black/20 pt-6 text-lg font-bold uppercase tracking-[0.15em] sm:text-xl'>
+                Come and be refreshed
+              </p>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
   )
