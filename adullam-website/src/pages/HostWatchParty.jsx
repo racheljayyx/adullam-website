@@ -7,7 +7,7 @@ import { watchPartiesApi } from '../lib/watchPartiesApi'
 
 const initialValues = {
   hostName: '', email: '', phone: '', partyName: '', city: '', neighbourhood: '',
-  privateAddress: '', maximumCapacity: 8, venueType: 'home', description: '',
+  addressLine1: '', addressLine2: '', postcode: '', maximumCapacity: 8, venueType: 'home', description: '',
   accessibilityNotes: '', consent: false, website: '',
 }
 
@@ -65,8 +65,16 @@ function HostWatchParty() {
             <FormField label='Watch party name' name='party-name' required><input id='party-name' name='partyName' value={values.partyName} onChange={updateValue} required maxLength='120' placeholder='e.g. The Nottingham Gathering' className={fieldClassName} /></FormField>
             <FormField label='City or town' name='host-city' required><input id='host-city' name='city' value={values.city} onChange={updateValue} required maxLength='100' autoComplete='address-level2' className={fieldClassName} /></FormField>
             <FormField label='Neighbourhood' name='host-neighbourhood' required><input id='host-neighbourhood' name='neighbourhood' value={values.neighbourhood} onChange={updateValue} required maxLength='100' autoComplete='address-level3' className={fieldClassName} /></FormField>
-            <FormField label='Private address' name='host-address' hint='Optional. Stored privately and never shown in public listings.'><textarea id='host-address' name='privateAddress' value={values.privateAddress} onChange={updateValue} maxLength='300' rows='3' autoComplete='street-address' className={fieldClassName} /></FormField>
-            <div className='grid gap-6'>
+            <div className='sm:col-span-2 rounded-2xl bg-[#F7F3EF] p-5'>
+              <p className='text-xs font-bold uppercase tracking-[0.16em] text-black/45'>Private venue address</p>
+              <p className='mt-2 text-sm leading-6 text-black/60'>Used by the organiser team. The postcode calculates an approximate distance, but the address is never included in public responses.</p>
+              <div className='mt-5 grid gap-6 sm:grid-cols-2'>
+                <FormField label='Address line 1' name='host-address-line-1' required><input id='host-address-line-1' name='addressLine1' value={values.addressLine1} onChange={updateValue} required maxLength='150' autoComplete='address-line1' className={fieldClassName} /></FormField>
+                <FormField label='Address line 2' name='host-address-line-2' hint='Optional'><input id='host-address-line-2' name='addressLine2' value={values.addressLine2} onChange={updateValue} maxLength='100' autoComplete='address-line2' className={fieldClassName} /></FormField>
+                <FormField label='Venue postcode' name='host-postcode' hint='Kept private' required><input id='host-postcode' name='postcode' value={values.postcode} onChange={updateValue} required maxLength='10' autoComplete='postal-code' placeholder='e.g. N17 8AA' className={fieldClassName} /></FormField>
+              </div>
+            </div>
+            <div className='grid gap-6 sm:col-span-2 sm:grid-cols-2'>
               <FormField label='Maximum capacity' name='host-capacity' required><input id='host-capacity' name='maximumCapacity' value={values.maximumCapacity} onChange={updateValue} required min='2' max='500' type='number' inputMode='numeric' className={fieldClassName} /></FormField>
               <FormField label='Venue type' name='host-venue' required><select id='host-venue' name='venueType' value={values.venueType} onChange={updateValue} className={fieldClassName}><option value='home'>Private home</option><option value='church'>Church</option><option value='community_space'>Community space</option><option value='workplace'>Workplace</option><option value='other'>Other</option></select></FormField>
             </div>
@@ -82,7 +90,7 @@ function HostWatchParty() {
         <aside className='h-fit rounded-2xl bg-black p-6 text-white lg:sticky lg:top-6'>
           <LockClosedIcon className='h-7 w-7 text-[#C0AA95]' aria-hidden='true' />
           <h2 className='mt-5 text-xl font-semibold'>Your privacy matters</h2>
-          <p className='mt-3 text-sm leading-6 text-white/65'>Public listings show only the party name, neighbourhood and city. Your email, phone number and private address stay restricted to authorised organisers.</p>
+          <p className='mt-3 text-sm leading-6 text-white/65'>Public listings show only the party name, neighbourhood, city and an approximate distance. Your email, phone number, full postcode, address and coordinates stay restricted to authorised organisers.</p>
         </aside>
       </div>
     </WatchPartyShell>

@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises'
 
 const migrationUrl = new URL('../supabase/migrations/202610280001_watch_parties.sql', import.meta.url)
 const sql = await readFile(migrationUrl, 'utf8')
+const distanceSql = await readFile(new URL('../supabase/migrations/202610290001_postcode_distance.sql', import.meta.url), 'utf8')
 const manageInterest = await readFile(new URL('../supabase/functions/manage-interest/index.js', import.meta.url), 'utf8')
 const adminFunction = await readFile(new URL('../supabase/functions/admin-watch-parties/index.js', import.meta.url), 'utf8')
 
@@ -39,4 +40,18 @@ test('matching runs after verification and can be retried safely by an organiser
   assert.match(manageInterest, /await notifyMatches\(admin, party\.id\)/)
   assert.match(adminFunction, /body\.action === 'notify'/)
   assert.match(sql, /unique \(interest_id, watch_party_id, notification_type\)/i)
+})
+
+test('postcode distance matching uses private PostGIS points and a genuine radius', () => {
+  assert.match(distanceSql, /create extension if not exists postgis with schema extensions/i)
+  assert.match(distanceSql, /using gist \(location\)/i)
+  assert.match(distanceSql, /extensions\.st_dwithin\(i\.location, wp\.location, i\.search_radius_miles \* 1609\.344\)/i)
+  assert.match(distanceSql, /grant execute on function public\.search_watch_parties_by_distance[\s\S]*to service_role/i)
+  assert.doesNotMatch(distanceSql, /grant execute on function public\.search_watch_parties_by_distance[\s\S]*to (anon|authenticated)/i)
+
+  const publicReturnShape = distanceSql.slice(
+    distanceSql.indexOf('returns table ('),
+    distanceSql.indexOf('language plpgsql'),
+  )
+  assert.doesNotMatch(publicReturnShape, /private_address|venue_postcode|location extensions/i)
 })

@@ -1,6 +1,8 @@
 import { adminClient } from '../_shared/supabase.js'
 import { errorResponse, handleOptions, jsonResponse, readJson } from '../_shared/http.js'
-import { cleanInteger, cleanString, cleanUuid, extractPostcodeArea, normaliseLocation } from '../_shared/validation.js'
+import { enforceRateLimit } from '../_shared/security.js'
+import { cleanInteger, cleanUuid } from '../_shared/validation.js'
+import { geocodeUkPostcode } from '../_shared/geocoding.js'
 
 Deno.serve(async (request) => {
   const options = handleOptions(request)
@@ -19,24 +21,22 @@ Deno.serve(async (request) => {
     }
 
     if (body.action !== 'search') throw Object.assign(new Error('Unknown action.'), { status: 400 })
-    const location = cleanString(body.location, 'Location', { min: 2, max: 120 })
+    await enforceRateLimit(request, admin, 'postcode-search', 60, 3600)
+    const geocoded = await geocodeUkPostcode(body.postcode || body.location)
     const radiusMiles = cleanInteger(body.radiusMiles, 'Search radius', { allowed: [5, 10, 25, 50], min: 5, max: 50 })
-    const locationNormalised = normaliseLocation(location)
-    const postcode = extractPostcodeArea(location)
-
-    const { data, error } = await admin.from('public_watch_parties').select('*').limit(100)
+    const { data, error } = await admin.rpc('search_watch_parties_by_distance', {
+      p_longitude: geocoded.longitude,
+      p_latitude: geocoded.latitude,
+      p_radius_miles: radiusMiles,
+    })
     if (error) throw error
 
-    const parties = (data || []).filter((party) => {
-      if (party.registration_status !== 'open' || party.remaining_capacity < 1) return false
-      const localityMatch = party.city_normalized === locationNormalised
-        || party.neighbourhood_normalized === locationNormalised
-        || party.city_normalized.includes(locationNormalised)
-        || party.neighbourhood_normalized.includes(locationNormalised)
-      return localityMatch || (postcode && party.postcode_area === postcode)
+    return jsonResponse(request, {
+      parties: data || [],
+      radiusMiles,
+      searchedPostcode: geocoded.postcode,
+      matchMethod: 'postcode-distance',
     })
-
-    return jsonResponse(request, { parties, radiusMiles, matchMethod: 'locality' })
   } catch (error) {
     return errorResponse(request, error)
   }

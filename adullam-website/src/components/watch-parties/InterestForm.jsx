@@ -6,11 +6,11 @@ import InlineNotice from './InlineNotice'
 import { radiusOptions } from '../../lib/watchPartyRules'
 import { watchPartiesApi } from '../../lib/watchPartiesApi'
 
-function InterestForm({ initialLocation = '', initialRadius = 10 }) {
+function InterestForm({ initialPostcode = '', initialRadius = 10 }) {
   const [values, setValues] = useState({
     name: '',
     email: '',
-    location: initialLocation,
+    postcode: initialPostcode,
     radiusMiles: initialRadius,
     groupSize: 1,
     consent: false,
@@ -65,8 +65,8 @@ function InterestForm({ initialLocation = '', initialRadius = 10 }) {
         <FormField label='Email' name='interest-email' required>
           <input id='interest-email' name='email' value={values.email} onChange={updateValue} required maxLength='254' type='email' autoComplete='email' className={fieldClassName} />
         </FormField>
-        <FormField label='Town or postcode' name='interest-location' hint='We use this only to find relevant watch parties.' required>
-          <input id='interest-location' name='location' value={values.location} onChange={updateValue} required maxLength='120' autoComplete='postal-code' className={fieldClassName} />
+        <FormField label='Your postcode' name='interest-postcode' hint='Kept private and used only to find parties within your chosen radius.' required>
+          <input id='interest-postcode' name='postcode' value={values.postcode} onChange={updateValue} required maxLength='10' autoComplete='postal-code' placeholder='e.g. N17 8AA' className={fieldClassName} />
         </FormField>
         <FormField label='Preferred search radius' name='interest-radius' required>
           <select id='interest-radius' name='radiusMiles' value={values.radiusMiles} onChange={updateValue} className={fieldClassName}>
@@ -98,4 +98,3 @@ function InterestForm({ initialLocation = '', initialRadius = 10 }) {
 }
 
 export default InterestForm
-

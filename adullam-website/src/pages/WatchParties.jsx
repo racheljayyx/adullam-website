@@ -10,11 +10,11 @@ import { radiusOptions } from '../lib/watchPartyRules'
 import { watchPartiesApi } from '../lib/watchPartiesApi'
 
 function WatchParties() {
-  const [location, setLocation] = useState('')
+  const [postcode, setPostcode] = useState('')
   const [radiusMiles, setRadiusMiles] = useState(10)
   const [results, setResults] = useState([])
   const [searched, setSearched] = useState(false)
-  const [searchLocation, setSearchLocation] = useState('')
+  const [searchedPostcode, setSearchedPostcode] = useState('')
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
@@ -25,9 +25,9 @@ function WatchParties() {
     setSearched(false)
 
     try {
-      const response = await watchPartiesApi.search({ location, radiusMiles })
+      const response = await watchPartiesApi.search({ postcode, radiusMiles })
       setResults(response.parties || [])
-      setSearchLocation(location)
+      setSearchedPostcode(response.searchedPostcode || postcode)
       setSearched(true)
     } catch (searchError) {
       setError(searchError.message)
@@ -59,15 +59,15 @@ function WatchParties() {
         <div className='mx-auto max-w-7xl'>
           <div className='max-w-2xl'>
             <p className='text-xs font-bold uppercase tracking-[0.2em] text-[#C0AA95]'>Find your community</p>
-            <h2 className='mt-4 text-3xl font-light tracking-tight sm:text-5xl'>Search by area</h2>
-            <p className='mt-4 leading-7 text-white/65'>Enter a city, town, neighbourhood or postcode. Exact addresses are always kept private.</p>
+            <h2 className='mt-4 text-3xl font-light tracking-tight sm:text-5xl'>Search near you</h2>
+            <p className='mt-4 leading-7 text-white/65'>Enter your UK postcode to see genuine watch parties within your chosen distance. Your postcode is used only for this search.</p>
           </div>
 
           <form onSubmit={handleSearch} className='mt-8 grid gap-3 rounded-2xl bg-white/10 p-4 sm:grid-cols-[1fr_12rem_auto] sm:p-5'>
-            <label className='sr-only' htmlFor='party-location'>City, town, neighbourhood or postcode</label>
+            <label className='sr-only' htmlFor='party-postcode'>Your postcode</label>
             <div className='relative'>
               <MapPinIcon className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-black/45' aria-hidden='true' />
-              <input id='party-location' value={location} onChange={(event) => setLocation(event.target.value)} required maxLength='120' placeholder='e.g. Nottingham or NG7' className={`${fieldClassName} pl-12`} />
+              <input id='party-postcode' value={postcode} onChange={(event) => setPostcode(event.target.value)} required maxLength='10' autoComplete='postal-code' placeholder='e.g. NG7 2BF' className={`${fieldClassName} pl-12`} />
             </div>
             <label className='sr-only' htmlFor='party-radius'>Search radius</label>
             <select id='party-radius' value={radiusMiles} onChange={(event) => setRadiusMiles(Number(event.target.value))} className={fieldClassName}>
@@ -77,7 +77,7 @@ function WatchParties() {
               {status === 'loading' ? 'Searching…' : 'Search'}
             </button>
           </form>
-          <p className='mt-3 text-xs leading-5 text-white/45'>Initial matching uses town and postcode-area data. The radius is saved for future distance matching and alerts.</p>
+          <p className='mt-3 text-xs leading-5 text-white/45'>Distances are calculated securely from postcode coordinates. Exact host addresses and coordinates are never returned publicly.</p>
           {error && <div className='mt-5 max-w-3xl'><InlineNotice tone='error'>{error}</InlineNotice></div>}
         </div>
       </section>
@@ -85,7 +85,7 @@ function WatchParties() {
       {searched && results.length > 0 && (
         <section className='bg-[#F7F3EF] px-5 py-14 sm:px-8 sm:py-20 lg:px-12' aria-live='polite'>
           <div className='mx-auto max-w-7xl'>
-            <p className='text-sm font-semibold text-black/55'>{results.length} {results.length === 1 ? 'party' : 'parties'} found near {searchLocation}</p>
+            <p className='text-sm font-semibold text-black/55'>{results.length} {results.length === 1 ? 'party' : 'parties'} found within {radiusMiles} miles of {searchedPostcode}</p>
             <div className='mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
               {results.map((party) => <PartyCard key={party.id} party={party} />)}
             </div>
@@ -100,7 +100,7 @@ function WatchParties() {
             <h2 className='mt-4 text-3xl font-light tracking-tight sm:text-5xl'>No watch parties near you. Yet.</h2>
             <p className='mt-5 max-w-3xl leading-7 text-black/65'>There's nothing nearby right now, but that could change. Leave your details and we'll let you know when someone hosts a watch party in your area.</p>
             <div className='mt-8'>
-              <InterestForm key={`${searchLocation}-${radiusMiles}`} initialLocation={searchLocation} initialRadius={radiusMiles} />
+              <InterestForm key={`${searchedPostcode}-${radiusMiles}`} initialPostcode={searchedPostcode} initialRadius={radiusMiles} />
             </div>
           </div>
         </section>
@@ -110,4 +110,3 @@ function WatchParties() {
 }
 
 export default WatchParties
-

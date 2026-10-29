@@ -10,6 +10,7 @@ React 19 + Vite 7 website for Adullam Academy, including the Watch Parties regis
 - Supabase Auth is used only for organiser accounts. Membership of `admin_users` is checked inside the admin Edge Function on every request.
 - Resend sends verification, booking, host and nearby-party emails.
 - Public browser roles can read only `public_watch_parties`, a deliberately sanitised view. Private tables have RLS enabled and browser access revoked.
+- Full UK postcodes are validated server-side with Postcodes.io. Private postcode points are stored as PostGIS geography values; public distance searches return only a rounded distance and approximate neighbourhood/city.
 - Booking capacity is enforced by `reserve_watch_party`, which locks the party row and completes the capacity check and insert in one database transaction.
 
 There are no fabricated fallback listings. With no approved database records, search correctly returns the waiting-list experience.
@@ -104,14 +105,17 @@ supabase functions deploy notify-approved-parties
 
 The `config.toml` file keeps public form functions callable without user accounts; they perform their own validation, CORS checks, honeypot checks and database-backed rate limiting. Admin requests still require an authenticated organiser and are checked server-side.
 
+## Postcode distance matching
+
+- Visitors search with a full UK postcode and a 5, 10, 25 or 50 mile radius.
+- Hosts provide a full private venue address and postcode. The address, full postcode and coordinates never appear in public database views or search responses.
+- Edge Functions validate postcodes with `https://api.postcodes.io`; no postcode API key is required.
+- PostGIS `ST_DWithin` performs indexed server-side radius matching using genuine postcode coordinates. The displayed mileage is a rounded straight-line approximation between postcode centroids, not a driving distance.
+- Existing parties created before migration `202610290001_postcode_distance.sql` have no geographic point. They must be resubmitted or privately backfilled with a validated postcode before they can appear in distance searches.
+
 ## Matching and notification behaviour
 
-The first release uses reliable locality matching:
-
-- exact normalised city/town or neighbourhood; or
-- matching UK outward postcode area when one is available.
-
-The requested radius is stored and shown in preferences, but it is not falsely interpreted as geographic distance. Real radius matching should only be enabled after adding trusted geocoding and PostGIS coordinates.
+New records use the person's selected radius through PostGIS. Legacy records without a geographic point retain the exact locality/outward-postcode fallback until they are backfilled.
 
 Approval in the organiser dashboard immediately runs matching. An optional scheduled retry can call `notify-approved-parties` with a service-role bearer token and `x-matching-secret: MATCHING_CRON_SECRET`. Each `(interest, party, notification type)` is unique, and a database claim occurs before sending, preventing duplicate alerts. Failed sends can be retried up to three times after five minutes. Capacity is checked before every invitation; invitations never reserve places.
 

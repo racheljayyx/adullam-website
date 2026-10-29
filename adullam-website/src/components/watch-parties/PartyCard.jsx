@@ -13,7 +13,7 @@ function PartyCard({ party }) {
         <div className='mt-5 space-y-3 text-sm text-black/65'>
           <p className='flex items-start gap-3'>
             <MapPinIcon className='mt-0.5 h-5 w-5 shrink-0 text-[#8C7059]' aria-hidden='true' />
-            <span>{party.approximate_location}</span>
+            <span>{party.approximate_location}{party.distance_miles !== undefined && party.distance_miles !== null ? ` · approximately ${Number(party.distance_miles).toFixed(1)} miles away` : ''}</span>
           </p>
           <p className='flex items-start gap-3'>
             <UserGroupIcon className='mt-0.5 h-5 w-5 shrink-0 text-[#8C7059]' aria-hidden='true' />
@@ -38,4 +38,3 @@ function PartyCard({ party }) {
 }
 
 export default PartyCard
-

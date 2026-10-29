@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { normaliseLocation, postcodeArea, validateGroupSize } from '../src/lib/watchPartyRules.js'
 import { cleanEmail, cleanInteger, extractPostcodeArea, extractPostcodeAreaFromAddress, ValidationError } from '../supabase/functions/_shared/validation.js'
+import { normalisePostcodeInput, postcodePoint } from '../supabase/functions/_shared/geocoding.js'
 
 test('normalises locality input without inventing coordinates', () => {
   assert.equal(normaliseLocation('  West   Bridgford '), 'west bridgford')
@@ -27,3 +28,9 @@ test('server validation accepts expected values and rejects invalid input', () =
   assert.throws(() => cleanInteger('7', 'Search radius', { min: 5, max: 50, allowed: [5, 10, 25, 50] }), ValidationError)
 })
 
+test('normalises a full UK postcode and creates a longitude-first PostGIS point', () => {
+  assert.equal(normalisePostcodeInput(' sw1a1aa '), 'SW1A 1AA')
+  assert.equal(postcodePoint(-0.1416, 51.501), 'POINT(-0.1416 51.501)')
+  assert.throws(() => normalisePostcodeInput('London'), ValidationError)
+  assert.throws(() => postcodePoint(Number.NaN, 51.5))
+})

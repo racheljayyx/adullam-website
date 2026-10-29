@@ -12,7 +12,7 @@ function csvCell(value) {
 
 async function overview(admin) {
   const [{ data: parties, error: partyError }, { data: registrations, error: registrationError }, { data: interests, error: interestError }] = await Promise.all([
-    admin.from('watch_parties').select('id, name, status, registration_status, host_name, host_email, host_phone, city, neighbourhood, maximum_capacity, venue_type, description, accessibility_notes, created_at').order('created_at', { ascending: false }),
+    admin.from('watch_parties').select('id, name, status, registration_status, host_name, host_email, host_phone, city, neighbourhood, private_address, venue_postcode, maximum_capacity, venue_type, description, accessibility_notes, created_at').order('created_at', { ascending: false }),
     admin.from('registrations').select('id, watch_party_id, attendee_name, attendee_email, group_size, status, created_at, watch_parties(name)').order('created_at', { ascending: false }),
     admin.from('interest_list').select('group_size, active, verified_at'),
   ])

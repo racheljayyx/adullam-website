@@ -2,7 +2,8 @@ import { activeEvent, adminClient } from '../_shared/supabase.js'
 import { errorResponse, handleOptions, jsonResponse, readJson } from '../_shared/http.js'
 import { enforceRateLimit } from '../_shared/security.js'
 import { button, emailFrame, escapeHtml, sendEmail, siteUrl } from '../_shared/email.js'
-import { cleanEmail, cleanInteger, cleanString, extractPostcodeAreaFromAddress, normaliseLocation, rejectHoneypot, requireConsent } from '../_shared/validation.js'
+import { cleanEmail, cleanInteger, cleanString, normaliseLocation, rejectHoneypot, requireConsent } from '../_shared/validation.js'
+import { geocodeUkPostcode } from '../_shared/geocoding.js'
 
 Deno.serve(async (request) => {
   const options = handleOptions(request)
@@ -21,7 +22,10 @@ Deno.serve(async (request) => {
     const partyName = cleanString(body.partyName, 'Watch party name', { min: 2, max: 120 })
     const city = cleanString(body.city, 'City or town', { min: 2, max: 100 })
     const neighbourhood = cleanString(body.neighbourhood, 'Neighbourhood', { min: 2, max: 100 })
-    const privateAddress = cleanString(body.privateAddress, 'Private address', { max: 300, optional: true })
+    const addressLine1 = cleanString(body.addressLine1, 'Address line 1', { min: 2, max: 150 })
+    const addressLine2 = cleanString(body.addressLine2, 'Address line 2', { max: 100, optional: true })
+    const geocoded = await geocodeUkPostcode(body.postcode)
+    const privateAddress = [addressLine1, addressLine2, city, geocoded.postcode].filter(Boolean).join(', ')
     const maximumCapacity = cleanInteger(body.maximumCapacity, 'Maximum capacity', { min: 2, max: 500 })
     const venueType = cleanString(body.venueType, 'Venue type', { max: 30 })
     if (!['home', 'church', 'community_space', 'workplace', 'other'].includes(venueType)) throw Object.assign(new Error('Choose a valid venue type.'), { status: 400 })
@@ -33,7 +37,8 @@ Deno.serve(async (request) => {
       event_id: event.id, host_name: hostName, host_email: email, host_phone: phone,
       name: partyName, city, city_normalized: normaliseLocation(city), neighbourhood,
       neighbourhood_normalized: normaliseLocation(neighbourhood),
-      postcode_area: extractPostcodeAreaFromAddress(privateAddress || ''), private_address: privateAddress,
+      postcode_area: geocoded.outcode, venue_postcode: geocoded.postcode,
+      private_address: privateAddress, location: geocoded.point,
       maximum_capacity: maximumCapacity, venue_type: venueType, description,
       accessibility_notes: accessibilityNotes, consented_at: new Date().toISOString(), status: 'pending',
     }).select('id, status').single()
@@ -56,4 +61,3 @@ Deno.serve(async (request) => {
     return errorResponse(request, error)
   }
 })
-

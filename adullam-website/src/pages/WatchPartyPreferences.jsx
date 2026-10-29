@@ -51,7 +51,7 @@ function WatchPartyPreferences() {
         {status === 'error' && <InlineNotice tone='error'>{error}</InlineNotice>}
         {values && (
           <form onSubmit={handleSubmit} className='space-y-6 rounded-2xl border border-black/10 bg-white p-6 sm:p-8'>
-            <FormField label='Town or postcode' name='preference-location' required><input id='preference-location' value={values.location} onChange={(event) => setValues({ ...values, location: event.target.value })} required maxLength='120' className={fieldClassName} /></FormField>
+            <FormField label='Postcode' name='preference-postcode' hint='Kept private and used only for distance matching.' required><input id='preference-postcode' value={values.postcode} onChange={(event) => setValues({ ...values, postcode: event.target.value })} required maxLength='10' autoComplete='postal-code' className={fieldClassName} /></FormField>
             <FormField label='Search radius' name='preference-radius' required><select id='preference-radius' value={values.radiusMiles} onChange={(event) => setValues({ ...values, radiusMiles: Number(event.target.value) })} className={fieldClassName}>{radiusOptions.map((radius) => <option key={radius} value={radius}>Within {radius} miles</option>)}</select></FormField>
             <FormField label='Estimated group size' name='preference-group' required><input id='preference-group' value={values.groupSize} onChange={(event) => setValues({ ...values, groupSize: Number(event.target.value) })} min='1' max='50' type='number' className={fieldClassName} /></FormField>
             <label className='flex items-start gap-3 rounded-xl bg-[#F7F3EF] p-4 text-sm leading-6'><input type='checkbox' checked={values.active} onChange={(event) => setValues({ ...values, active: event.target.checked })} className='mt-1 h-4 w-4 accent-black' /><span>Keep my watch-party availability emails active. Untick this box to unsubscribe.</span></label>
@@ -66,4 +66,3 @@ function WatchPartyPreferences() {
 }
 
 export default WatchPartyPreferences
-

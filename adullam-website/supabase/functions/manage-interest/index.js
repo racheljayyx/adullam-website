@@ -1,14 +1,15 @@
 import { adminClient } from '../_shared/supabase.js'
 import { errorResponse, handleOptions, jsonResponse, readJson } from '../_shared/http.js'
 import { sha256, verifyPreferenceToken } from '../_shared/security.js'
-import { cleanInteger, cleanString, extractPostcodeArea, normaliseLocation } from '../_shared/validation.js'
+import { cleanInteger, cleanString, normaliseLocation } from '../_shared/validation.js'
 import { notifyMatches } from '../_shared/matching.js'
+import { geocodeUkPostcode } from '../_shared/geocoding.js'
 
 async function authorisedInterest(admin, token) {
   const parsed = await verifyPreferenceToken(token)
   if (!parsed) throw Object.assign(new Error('This preference link is invalid.'), { status: 401 })
   const { data, error } = await admin.from('interest_list')
-    .select('id, location_query, search_radius_miles, group_size, active, verified_at, preferences_token_version')
+    .select('id, postcode, location_query, search_radius_miles, group_size, active, verified_at, preferences_token_version')
     .eq('id', parsed.interestId).eq('preferences_token_version', parsed.version).maybeSingle()
   if (error) throw error
   if (!data) throw Object.assign(new Error('This preference link is no longer active.'), { status: 401 })
@@ -17,7 +18,7 @@ async function authorisedInterest(admin, token) {
 
 function publicPreferences(interest) {
   return {
-    location: interest.location_query,
+    postcode: interest.postcode || interest.location_query,
     radiusMiles: interest.search_radius_miles,
     groupSize: interest.group_size,
     active: interest.active,
@@ -79,16 +80,18 @@ Deno.serve(async (request) => {
 
     if (body.action === 'update') {
       const interest = await authorisedInterest(admin, body.token)
-      const location = cleanString(body.location, 'Town or postcode', { min: 2, max: 120 })
+      const geocoded = await geocodeUkPostcode(body.postcode || body.location)
       const radiusMiles = cleanInteger(body.radiusMiles, 'Search radius', { allowed: [5, 10, 25, 50], min: 5, max: 50 })
       const groupSize = cleanInteger(body.groupSize, 'Group size', { min: 1, max: 50 })
       const active = body.active === true
       if (active && !interest.verified_at) throw Object.assign(new Error('Verify your email before enabling alerts.'), { status: 400 })
+      const locality = geocoded.region || geocoded.district || geocoded.postcode
       const { data, error } = await admin.from('interest_list').update({
-        location_query: location, location_normalized: normaliseLocation(location),
-        postcode_area: extractPostcodeArea(location), search_radius_miles: radiusMiles,
+        location_query: geocoded.postcode, location_normalized: normaliseLocation(locality),
+        postcode_area: geocoded.outcode, postcode: geocoded.postcode, location: geocoded.point,
+        search_radius_miles: radiusMiles,
         group_size: groupSize, active, unsubscribed_at: active ? null : new Date().toISOString(),
-      }).eq('id', interest.id).select('location_query, search_radius_miles, group_size, active').single()
+      }).eq('id', interest.id).select('postcode, location_query, search_radius_miles, group_size, active').single()
       if (error) throw error
       return jsonResponse(request, { preferences: publicPreferences(data) })
     }
