@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises'
 
 const migrationUrl = new URL('../supabase/migrations/202610280001_watch_parties.sql', import.meta.url)
 const sql = await readFile(migrationUrl, 'utf8')
+const manageInterest = await readFile(new URL('../supabase/functions/manage-interest/index.js', import.meta.url), 'utf8')
+const adminFunction = await readFile(new URL('../supabase/functions/admin-watch-parties/index.js', import.meta.url), 'utf8')
 
 test('capacity reservation locks the party row before counting bookings', () => {
   const reservationFunction = sql.slice(sql.indexOf('create or replace function public.reserve_watch_party'), sql.indexOf('create or replace function public.party_has_capacity'))
@@ -31,4 +33,10 @@ test('the public view omits private host and attendee fields', () => {
   assert.doesNotMatch(view, /host_phone/)
   assert.doesNotMatch(view, /private_address/)
   assert.doesNotMatch(view, /attendee_email/)
+})
+
+test('matching runs after verification and can be retried safely by an organiser', () => {
+  assert.match(manageInterest, /await notifyMatches\(admin, party\.id\)/)
+  assert.match(adminFunction, /body\.action === 'notify'/)
+  assert.match(sql, /unique \(interest_id, watch_party_id, notification_type\)/i)
 })

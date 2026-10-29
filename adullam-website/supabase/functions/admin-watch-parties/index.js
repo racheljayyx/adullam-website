@@ -63,6 +63,10 @@ Deno.serve(async (request) => {
     }
 
     const partyId = cleanUuid(body.partyId, 'Watch party')
+    if (body.action === 'notify') {
+      return jsonResponse(request, { notifications: await notifyMatches(admin, partyId) })
+    }
+
     if (body.action === 'approve') {
       const { data: party, error } = await admin.from('watch_parties').update({ status: 'approved', approved_at: new Date().toISOString(), approved_by: user.id, rejected_at: null })
         .eq('id', partyId).eq('status', 'pending').select('id, name, host_name, host_email, city').maybeSingle()

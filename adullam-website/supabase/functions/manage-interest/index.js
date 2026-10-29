@@ -2,6 +2,7 @@ import { adminClient } from '../_shared/supabase.js'
 import { errorResponse, handleOptions, jsonResponse, readJson } from '../_shared/http.js'
 import { sha256, verifyPreferenceToken } from '../_shared/security.js'
 import { cleanInteger, cleanString, extractPostcodeArea, normaliseLocation } from '../_shared/validation.js'
+import { notifyMatches } from '../_shared/matching.js'
 
 async function authorisedInterest(admin, token) {
   const parsed = await verifyPreferenceToken(token)
@@ -34,7 +35,7 @@ Deno.serve(async (request) => {
     if (body.action === 'verify') {
       const tokenHash = await sha256(cleanString(body.token, 'Verification token', { min: 32, max: 200 }))
       const { data: interest, error } = await admin.from('interest_list')
-        .select('id, verification_expires_at').eq('verification_token_hash', tokenHash).maybeSingle()
+        .select('id, event_id, verification_expires_at').eq('verification_token_hash', tokenHash).maybeSingle()
       if (error) throw error
       if (!interest) throw Object.assign(new Error('This verification link is invalid or has already been used.'), { status: 400 })
       if (!interest.verification_expires_at || new Date(interest.verification_expires_at) < new Date()) {
@@ -44,7 +45,31 @@ Deno.serve(async (request) => {
         verified_at: new Date().toISOString(), active: true, verification_token_hash: null, verification_expires_at: null,
       }).eq('id', interest.id)
       if (updateError) throw updateError
-      return jsonResponse(request, { verified: true })
+
+      // Approval may have happened while the verification email was waiting to be opened.
+      // Check existing open parties now so a newly verified person is not missed.
+      const notifications = { sent: 0, skipped: 0, failed: 0 }
+      try {
+        const { data: parties, error: partyError } = await admin.from('watch_parties')
+          .select('id')
+          .eq('event_id', interest.event_id)
+          .eq('status', 'approved')
+          .eq('registration_status', 'open')
+        if (partyError) throw partyError
+
+        for (const party of parties || []) {
+          const result = await notifyMatches(admin, party.id)
+          notifications.sent += result.sent
+          notifications.skipped += result.skipped
+          notifications.failed += result.failed
+        }
+      } catch (notificationError) {
+        // Verification must remain successful even if a notification provider is unavailable.
+        console.error(notificationError)
+        notifications.failed += 1
+      }
+
+      return jsonResponse(request, { verified: true, notifications })
     }
 
     if (body.action === 'get') {
@@ -73,4 +98,3 @@ Deno.serve(async (request) => {
     return errorResponse(request, error)
   }
 })
-

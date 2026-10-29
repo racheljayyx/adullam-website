@@ -17,6 +17,7 @@ function AdminWatchParties() {
   const [overview, setOverview] = useState(emptyOverview)
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
   const [login, setLogin] = useState({ email: '', password: '' })
 
   const loadOverview = useCallback(async () => {
@@ -71,8 +72,21 @@ function AdminWatchParties() {
   const runAction = async (action, partyId) => {
     setStatus('saving')
     setError('')
+    setNotice('')
     try {
-      await watchPartiesApi.admin(action, { partyId })
+      const response = await watchPartiesApi.admin(action, { partyId })
+      if (action === 'approve') {
+        const sent = response.notifications?.sent || 0
+        setNotice(`Watch party approved. ${sent} matching alert${sent === 1 ? '' : 's'} sent.`)
+      } else if (action === 'notify') {
+        const sent = response.notifications?.sent || 0
+        const failed = response.notifications?.failed || 0
+        setNotice(`Alert check complete: ${sent} sent${failed ? `, ${failed} failed` : ''}. Previously notified people were not emailed again.`)
+      } else if (action === 'reject') {
+        setNotice('Watch party rejected.')
+      } else if (action === 'close') {
+        setNotice('Registrations closed for this watch party.')
+      }
       await loadOverview()
     } catch (actionError) {
       setError(actionError.message)
@@ -132,6 +146,7 @@ function AdminWatchParties() {
         </div>
 
         {error && <div className='mt-6'><InlineNotice tone='error'>{error}</InlineNotice></div>}
+        {notice && <div className='mt-6'><InlineNotice tone='success'>{notice}</InlineNotice></div>}
 
         <div className='mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
           {[
@@ -157,7 +172,7 @@ function AdminWatchParties() {
           <h2 className='text-2xl font-semibold'>Approved watch parties</h2>
           <div className='mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white'>
             <table className='min-w-full text-left text-sm'><thead className='border-b border-black/10 bg-black/[0.03] text-xs uppercase tracking-[0.12em] text-black/50'><tr><th className='px-5 py-4'>Party</th><th className='px-5 py-4'>Location</th><th className='px-5 py-4'>Confirmed</th><th className='px-5 py-4'>Remaining</th><th className='px-5 py-4'>Status</th><th className='px-5 py-4'><span className='sr-only'>Actions</span></th></tr></thead>
-              <tbody className='divide-y divide-black/10'>{overview.approvedParties.map((party) => <tr key={party.id}><td className='px-5 py-4 font-semibold'>{party.name}</td><td className='px-5 py-4'>{party.neighbourhood}, {party.city}</td><td className='px-5 py-4'>{party.confirmed_attendees}</td><td className='px-5 py-4'>{party.remaining_capacity}</td><td className='px-5 py-4 capitalize'>{party.registration_status}</td><td className='px-5 py-4 text-right'>{party.registration_status === 'open' && <button onClick={() => runAction('close', party.id)} className='inline-flex items-center gap-1 text-xs font-bold text-red-800'><NoSymbolIcon className='h-4 w-4' />Close</button>}</td></tr>)}</tbody>
+              <tbody className='divide-y divide-black/10'>{overview.approvedParties.map((party) => <tr key={party.id}><td className='px-5 py-4 font-semibold'>{party.name}</td><td className='px-5 py-4'>{party.neighbourhood}, {party.city}</td><td className='px-5 py-4'>{party.confirmed_attendees}</td><td className='px-5 py-4'>{party.remaining_capacity}</td><td className='px-5 py-4 capitalize'>{party.registration_status}</td><td className='px-5 py-4'><div className='flex justify-end gap-3'>{party.registration_status === 'open' && <><button onClick={() => runAction('notify', party.id)} disabled={status === 'saving'} className='inline-flex items-center gap-1 text-xs font-bold text-[#6F513B] disabled:opacity-50'><ArrowPathIcon className='h-4 w-4' />Send alerts</button><button onClick={() => runAction('close', party.id)} disabled={status === 'saving'} className='inline-flex items-center gap-1 text-xs font-bold text-red-800 disabled:opacity-50'><NoSymbolIcon className='h-4 w-4' />Close</button></>}</div></td></tr>)}</tbody>
             </table>
           </div>
         </section>
@@ -174,4 +189,3 @@ function AdminWatchParties() {
 }
 
 export default AdminWatchParties
-
