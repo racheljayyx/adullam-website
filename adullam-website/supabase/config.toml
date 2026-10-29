@@ -1,0 +1,29 @@
+project_id = "adullam-watch-parties"
+
+[functions.watch-parties-public]
+verify_jwt = false
+entrypoint = "./functions/watch-parties-public/index.js"
+
+[functions.submit-watch-party]
+verify_jwt = false
+entrypoint = "./functions/submit-watch-party/index.js"
+
+[functions.create-booking]
+verify_jwt = false
+entrypoint = "./functions/create-booking/index.js"
+
+[functions.register-interest]
+verify_jwt = false
+entrypoint = "./functions/register-interest/index.js"
+
+[functions.manage-interest]
+verify_jwt = false
+entrypoint = "./functions/manage-interest/index.js"
+
+[functions.admin-watch-parties]
+verify_jwt = false
+entrypoint = "./functions/admin-watch-parties/index.js"
+
+[functions.notify-approved-parties]
+verify_jwt = false
+entrypoint = "./functions/notify-approved-parties/index.js"

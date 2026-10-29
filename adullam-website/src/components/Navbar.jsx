@@ -18,6 +18,7 @@ function Navbar() {
         <Link smooth to='/#about' className='hover:text-gray-400'>About Us</Link>
         <Link smooth to='/#programs' className='hover:text-gray-400'>Programs</Link>
         <Link smooth to='/#contact' className='hover:text-gray-400'>Contact Us</Link>
+        <Link to='/watch-parties' className='hover:text-gray-400'>Watch Parties</Link>
         <Link to='/give' className='hover:text-gray-400'>Give</Link>
       </nav>
 
@@ -48,6 +49,7 @@ function Navbar() {
         <Link smooth to='/#about' className='hover:text-gray-400' onClick={() => setIsOpen(false)}>About Us</Link>
         <Link smooth to='/#programs' className='hover:text-gray-400' onClick={() => setIsOpen(false)}>Programs</Link>
         <Link smooth to='/#contact' className='hover:text-gray-400' onClick={() => setIsOpen(false)}>Contact Us</Link>
+        <Link to='/watch-parties' className='hover:text-gray-400' onClick={() => setIsOpen(false)}>Watch Parties</Link>
         <Link to='/give' className='hover:text-gray-400' onClick={() => setIsOpen(false)}>Give</Link>
       </nav>
     </header>
