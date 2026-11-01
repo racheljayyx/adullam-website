@@ -96,6 +96,13 @@ const programs = [
   },
 ]
 
+const upcomingRetreats = [
+  { month: 'April', dates: '2–4 April 2027' },
+  { month: 'June', dates: '4–6 June 2027' },
+  { month: 'September', dates: '3–5 September 2027' },
+  { month: 'December', dates: '3–5 December 2027' },
+]
+
 function Programs() {
   return (
     <section id='programs' className='px-4 py-12 sm:px-8 lg:px-16'>
@@ -154,6 +161,59 @@ function Programs() {
             </article>
           )
         })}
+
+        <div className='pt-10 sm:pt-14'>
+          <h2 className='pb-9 text-center text-2xl sm:text-3xl'>
+            UPCOMING RETREATS
+          </h2>
+
+          <article className='grid overflow-hidden rounded-2xl border border-black/10 shadow-sm md:grid-cols-2'>
+            <div className='flex min-h-80 flex-col justify-between bg-black p-7 text-white sm:p-10 lg:min-h-[32rem] lg:p-12'>
+              <div className='flex items-center gap-3'>
+                <span className='h-px w-8 bg-[#C0AA95]' aria-hidden='true' />
+                <p className='text-xs font-semibold uppercase tracking-[0.2em] text-[#E3D6C8] sm:text-sm'>
+                  2027 retreat calendar
+                </p>
+              </div>
+
+              <div>
+                <h3 className='max-w-2xl text-4xl font-light leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl'>
+                  Save the dates
+                </h3>
+                <p className='mt-6 inline-flex rounded-full border border-white/25 px-5 py-2.5 text-sm font-bold uppercase tracking-[0.14em] text-[#E3D6C8]'>
+                  In person + online
+                </p>
+              </div>
+            </div>
+
+            <div className='flex min-h-80 flex-col justify-between bg-[#E3D6C8] p-7 text-black sm:p-10 lg:min-h-[32rem] lg:p-12'>
+              <div>
+                <p className='text-xs font-bold uppercase tracking-[0.2em] text-black/60 sm:text-sm'>
+                  First weekend gatherings
+                </p>
+                <div className='mt-7 grid gap-3 sm:grid-cols-2'>
+                  {upcomingRetreats.map((retreat) => (
+                    <div key={retreat.month} className='rounded-xl border border-black/10 bg-white/45 p-4 sm:p-5'>
+                      <p className='text-xs font-bold uppercase tracking-[0.16em] text-black/50'>{retreat.month}</p>
+                      <p className='mt-2 text-lg font-semibold'>{retreat.dates}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className='mt-8 border-t border-black/20 pt-7'>
+                <p className='text-xs font-bold uppercase tracking-[0.2em] text-black/60'>Location</p>
+                <h3 className='mt-3 text-2xl font-semibold'>Great Hall, Trent Building</h3>
+                <address className='mt-2 max-w-xl text-base not-italic leading-relaxed sm:text-lg'>
+                  University of Nottingham, Nottingham, NG7 2RD
+                </address>
+                <p className='mt-5 text-base leading-relaxed sm:text-lg'>
+                  All retreats are available in person and online.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
 
         <div className='pt-10 sm:pt-14'>
           <h2 className='pb-9 text-center text-2xl sm:text-3xl'>
