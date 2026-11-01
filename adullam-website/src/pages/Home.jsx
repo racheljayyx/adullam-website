@@ -4,6 +4,7 @@ import Programs from '../components/Programs'
 import Mentoring from '../components/Mentoring'
 import CoreValues from '../components/CoreValues'
 import CorePillars from '../components/CorePillars'
+import { MENTORING_APPLICATIONS_OPEN } from '../config/features'
 
 function Home() {
     return (
@@ -13,7 +14,7 @@ function Home() {
             <CoreValues />
             <CorePillars />
             <Programs />
-            <Mentoring />
+            {MENTORING_APPLICATIONS_OPEN && <Mentoring />}
         </div>
     )
 }
