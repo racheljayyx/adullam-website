@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises'
 const migrationUrl = new URL('../supabase/migrations/202610280001_watch_parties.sql', import.meta.url)
 const sql = await readFile(migrationUrl, 'utf8')
 const distanceSql = await readFile(new URL('../supabase/migrations/202610290001_postcode_distance.sql', import.meta.url), 'utf8')
+const nearestFirstSql = await readFile(new URL('../supabase/migrations/202611010001_list_watch_parties_by_distance.sql', import.meta.url), 'utf8')
 const manageInterest = await readFile(new URL('../supabase/functions/manage-interest/index.js', import.meta.url), 'utf8')
 const adminFunction = await readFile(new URL('../supabase/functions/admin-watch-parties/index.js', import.meta.url), 'utf8')
 
@@ -54,4 +55,14 @@ test('postcode distance matching uses private PostGIS points and a genuine radiu
     distanceSql.indexOf('language plpgsql'),
   )
   assert.doesNotMatch(publicReturnShape, /private_address|venue_postcode|location extensions/i)
+})
+
+test('public discovery lists every available party from closest to furthest', () => {
+  assert.match(nearestFirstSql, /wp\.status = 'approved'/i)
+  assert.match(nearestFirstSql, /wp\.registration_status = 'open'/i)
+  assert.match(nearestFirstSql, /wp\.maximum_capacity - bookings\.confirmed_people > 0/i)
+  assert.match(nearestFirstSql, /order by extensions\.st_distance\(wp\.location, search_point\)/i)
+  assert.doesNotMatch(nearestFirstSql, /st_dwithin/i)
+  assert.match(nearestFirstSql, /grant execute on function public\.list_available_watch_parties_by_distance[\s\S]*to service_role/i)
+  assert.doesNotMatch(nearestFirstSql, /grant execute on function public\.list_available_watch_parties_by_distance[\s\S]*to (anon|authenticated)/i)
 })
