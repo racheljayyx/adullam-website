@@ -55,40 +55,40 @@ const programs = [
     details: <p>Building daily discipline and sensitivity to the Holy Spirit.</p>,
   },
   {
-    frequency: 'Quarterly Meetings',
-    category: 'Hybrid, in person and online',
-    title: 'The Call',
+    frequency: 'December 4–6, 2026',
+    category: 'Quarterly online meeting',
+    title: 'The Call: Ananias of Damascus',
     details: (
       <>
-        <p className='mb-6'>
-          <span className='font-bold'>SEPT 25-27</span>
-        </p>
-        <p className='mb-6'>
-          <span className='font-bold'>ONLINE</span>
-          <br />
-          FRI 7PM - 10PM
-          <br />
-          SAT 7PM - 10PM
-        </p>
-        <p className='mb-6'>
-          <span className='font-bold'>IN PERSON</span>
-          <br />
-          SAT 8AM - 4PM
-          <br />
-          SUN 8AM - 4PM
-        </p>
-        <p>
-          <span className='font-bold'>Location:</span>
-          <br />
-          <br />
-          Monica Partridge Building,
-          <br />
-          University Park Campus,
-          <br />
-          NOTTINGHAM,
-          <br />
-          NG7 2BF
-        </p>
+        <p className='mb-6 text-sm font-bold uppercase tracking-[0.16em]'>Online</p>
+
+        <div className='space-y-6'>
+          <div>
+            <p className='font-bold'>Friday, December 4</p>
+            <ul className='mt-2 space-y-1.5'>
+              <li>7:00 PM–9:00 PM — Teaching + Spoken Word</li>
+              <li>9:00 PM–10:00 PM — Praying</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className='font-bold'>Saturday, December 5</p>
+            <ul className='mt-2 space-y-1.5'>
+              <li>7:00 AM–9:00 AM — Teaching + Spoken Word</li>
+              <li>9:00 AM–5:00 PM — Praying</li>
+              <li>7:00 PM–10:00 PM — Prayer &amp; Worship</li>
+            </ul>
+          </div>
+
+          <div>
+            <p className='font-bold'>Sunday, December 6</p>
+            <ul className='mt-2 space-y-1.5'>
+              <li>9:00 AM–5:00 PM — Prayer</li>
+              <li>7:00 PM–9:00 PM — Teaching + Spoken Word</li>
+              <li>9:00 PM–10:00 PM — Praying</li>
+            </ul>
+          </div>
+        </div>
       </>
     ),
     action: 'Sign Up',
