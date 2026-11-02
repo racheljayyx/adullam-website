@@ -208,7 +208,7 @@ function Programs() {
                   University of Nottingham, Nottingham, NG7 2RD
                 </address>
                 <p className='mt-5 text-base leading-relaxed sm:text-lg'>
-                  All retreats are available in person and online.
+                  All retreats are available to attend in person and/or online.
                 </p>
               </div>
             </div>
