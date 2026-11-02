@@ -56,7 +56,8 @@ const programs = [
   },
   {
     frequency: 'December 4–6, 2026',
-    category: 'Quarterly online meeting',
+    category: 'Quarterly Retreat',
+    categoryNote: '(THE DECEMBER EDITION IS FULLY ONLINE)',
     title: 'The Call: Ananias of Damascus',
     details: (
       <>
@@ -122,11 +123,18 @@ function Programs() {
                   isReversed ? 'md:order-2' : 'md:order-1'
                 }`}
               >
-                <div className='flex items-center gap-3'>
+                <div className='flex items-start gap-3'>
                   <span className='h-px w-8 bg-[#C0AA95]' aria-hidden='true' />
-                  <p className='text-xs font-semibold uppercase tracking-[0.2em] text-[#E3D6C8] sm:text-sm'>
-                    {program.category}
-                  </p>
+                  <div>
+                    <p className='text-xs font-semibold uppercase tracking-[0.2em] text-[#E3D6C8] sm:text-sm'>
+                      {program.category}
+                    </p>
+                    {program.categoryNote && (
+                      <p className='mt-2 max-w-sm text-[0.65rem] font-semibold uppercase leading-relaxed tracking-[0.14em] text-white/60 sm:text-xs'>
+                        {program.categoryNote}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <h2 className='mt-12 max-w-2xl text-4xl font-light leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl'>
                   {program.title}
