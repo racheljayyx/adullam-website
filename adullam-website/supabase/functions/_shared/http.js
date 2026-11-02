@@ -14,7 +14,7 @@ export function corsHeaders(request) {
 
   return {
     ...(permittedOrigin ? { 'Access-Control-Allow-Origin': permittedOrigin } : {}),
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, x-request-id, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json',
     'Vary': 'Origin',
@@ -45,9 +45,41 @@ export async function readJson(request) {
   }
 }
 
+function errorCode(status, error) {
+  if (error?.name === 'ValidationError') return 'validation_error'
+  if (error?.code && !/^P?\d{4,5}$/.test(String(error.code))) return String(error.code)
+  if (status === 401) return 'unauthorized'
+  if (status === 403) return 'forbidden'
+  if (status === 404) return 'not_found'
+  if (status === 409) return 'conflict'
+  if (status === 422) return 'validation_error'
+  if (status === 429) return 'rate_limited'
+  if (status >= 500) return 'service_unavailable'
+  return 'request_failed'
+}
+
+function publicMessage(status, error) {
+  if (error?.publicMessage) return error.publicMessage
+  if (error?.name === 'ValidationError' || [400, 401, 403, 404, 409, 422, 429].includes(status)) return error.message
+  if (status >= 500) return 'The Watch Parties service is temporarily unavailable. Please try again in a moment.'
+  return 'We could not complete that request. Please try again.'
+}
+
 export function errorResponse(request, error) {
-  console.error(error)
   const status = Number(error?.status) || (error?.name === 'ValidationError' ? 400 : 500)
-  const safeMessage = status >= 500 ? 'Something went wrong. Please try again.' : error.message
-  return jsonResponse(request, { error: safeMessage }, status)
+  const incomingRequestId = request.headers.get('x-request-id') || ''
+  const requestId = /^[a-zA-Z0-9-]{8,100}$/.test(incomingRequestId) ? incomingRequestId : crypto.randomUUID()
+  const code = errorCode(status, error)
+
+  console.error(JSON.stringify({
+    type: 'watch_party_request_error',
+    requestId,
+    operation: new URL(request.url).pathname.split('/').filter(Boolean).pop() || 'unknown',
+    category: code,
+    status,
+    errorName: error?.name || 'Error',
+    internalMessage: String(error?.message || 'Unknown error').slice(0, 500),
+  }))
+
+  return jsonResponse(request, { error: { code, message: publicMessage(status, error) }, requestId }, status)
 }

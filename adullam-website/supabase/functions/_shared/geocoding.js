@@ -48,10 +48,13 @@ export async function geocodeUkPostcode(value) {
     }
   } catch (error) {
     if (error instanceof ValidationError || error?.status === 422) throw error
-    console.error(error)
-    throw Object.assign(new Error('We could not validate that postcode right now. Please try again.'), { status: 503 })
+    throw Object.assign(new Error('Postcode lookup service failed.'), {
+      status: 503,
+      code: 'postcode_service_unavailable',
+      publicMessage: "We couldn't check that postcode right now. Please try again in a moment.",
+      cause: error,
+    })
   } finally {
     clearTimeout(timeout)
   }
 }
-

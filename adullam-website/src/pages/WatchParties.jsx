@@ -6,6 +6,7 @@ import PartyCard from '../components/watch-parties/PartyCard'
 import InterestForm from '../components/watch-parties/InterestForm'
 import InlineNotice from '../components/watch-parties/InlineNotice'
 import { fieldClassName } from '../components/watch-parties/FormField'
+import { normaliseUkPostcode, validateUkPostcode } from '../lib/watchPartyRules'
 import { watchPartiesApi } from '../lib/watchPartiesApi'
 
 function WatchParties() {
@@ -17,13 +18,24 @@ function WatchParties() {
   const [error, setError] = useState('')
 
   const handleSearch = async (event) => {
-    event.preventDefault()
+    event?.preventDefault()
+    if (status === 'loading') return
+
+    const postcodeError = validateUkPostcode(postcode)
+    if (postcodeError) {
+      setError(postcodeError)
+      setSearched(false)
+      return
+    }
+
+    const formattedPostcode = normaliseUkPostcode(postcode)
+    setPostcode(formattedPostcode)
     setStatus('loading')
     setError('')
     setSearched(false)
 
     try {
-      const response = await watchPartiesApi.search({ postcode })
+      const response = await watchPartiesApi.search({ postcode: formattedPostcode })
       setResults(response.parties || [])
       setSearchedPostcode(response.searchedPostcode || postcode)
       setSearched(true)
@@ -61,7 +73,7 @@ function WatchParties() {
             <p className='mt-4 leading-7 text-white/65'>Enter your UK postcode to see every available watch party, ordered from closest to furthest. Your postcode is used only for this search.</p>
           </div>
 
-          <form onSubmit={handleSearch} className='mt-8 grid gap-3 rounded-2xl bg-white/10 p-4 sm:grid-cols-[1fr_auto] sm:p-5'>
+          <form onSubmit={handleSearch} aria-busy={status === 'loading'} className='mt-8 grid gap-3 rounded-2xl bg-white/10 p-4 sm:grid-cols-[1fr_auto] sm:p-5'>
             <label className='sr-only' htmlFor='party-postcode'>Your postcode</label>
             <div className='relative'>
               <MapPinIcon className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-black/45' aria-hidden='true' />
@@ -72,7 +84,7 @@ function WatchParties() {
             </button>
           </form>
           <p className='mt-3 text-xs leading-5 text-white/45'>Distances are calculated securely from postcode coordinates. Exact host addresses and coordinates are never returned publicly.</p>
-          {error && <div className='mt-5 max-w-3xl'><InlineNotice tone='error'>{error}</InlineNotice></div>}
+          {error && <div className='mt-5 max-w-3xl'><InlineNotice tone='error'><div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'><span>{error}</span><button type='button' onClick={handleSearch} disabled={status === 'loading'} className='w-fit rounded-full border border-current px-4 py-1.5 text-xs font-bold disabled:opacity-50'>Try Again</button></div></InlineNotice></div>}
         </div>
       </section>
 

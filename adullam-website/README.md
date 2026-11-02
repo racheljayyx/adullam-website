@@ -81,7 +81,7 @@ supabase secrets set \
   RESEND_API_KEY='re_...' \
   EMAIL_FROM='Adullam Academy <watchparties@your-verified-domain.example>' \
   SITE_URL='https://your-production-site.example' \
-  ALLOWED_ORIGINS='https://your-production-site.example,http://localhost:5173' \
+  ALLOWED_ORIGINS='https://your-production-site.example,https://www.your-production-site.example,http://localhost:5173' \
   RATE_LIMIT_SALT='LONG_RANDOM_VALUE' \
   PREFERENCES_SIGNING_SECRET='DIFFERENT_RANDOM_VALUE_AT_LEAST_32_CHARACTERS' \
   MATCHING_CRON_SECRET='ANOTHER_LONG_RANDOM_VALUE'
@@ -103,14 +103,14 @@ supabase functions deploy admin-watch-parties
 supabase functions deploy notify-approved-parties
 ```
 
-The `config.toml` file keeps public form functions callable without user accounts; they perform their own validation, CORS checks, honeypot checks and database-backed rate limiting. Admin requests still require an authenticated organiser and are checked server-side.
+The `config.toml` file keeps public form functions callable without user accounts; they perform their own validation, CORS checks, honeypot checks and database-backed rate limiting. Admin requests still require an authenticated organiser and are checked server-side. Add every real production hostname to `ALLOWED_ORIGINS` (for example, the apex domain, `www`, and any Netlify hostname users may visit). Missing a hostname causes browsers to block Edge Function responses even when the function itself succeeds.
 
 ## Postcode distance matching
 
-- Visitors search with a full UK postcode and a 5, 10, 25 or 50 mile radius.
+- Visitors search with a full UK postcode. The public results include every approved party with availability, ordered nearest to furthest.
 - Hosts provide a full private venue address and postcode. The address, full postcode and coordinates never appear in public database views or search responses.
 - Edge Functions validate postcodes with `https://api.postcodes.io`; no postcode API key is required.
-- PostGIS `ST_DWithin` performs indexed server-side radius matching using genuine postcode coordinates. The displayed mileage is a rounded straight-line approximation between postcode centroids, not a driving distance.
+- PostGIS orders public discovery results using genuine postcode coordinates. Notification preferences still use a 5, 10, 25 or 50 mile radius and `ST_DWithin`. Displayed mileage is a rounded straight-line approximation between postcode centroids, not a driving distance.
 - Existing parties created before migration `202610290001_postcode_distance.sql` have no geographic point. They must be resubmitted or privately backfilled with a validated postcode before they can appear in distance searches.
 
 ## Matching and notification behaviour

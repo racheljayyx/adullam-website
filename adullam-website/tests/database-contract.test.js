@@ -6,8 +6,12 @@ const migrationUrl = new URL('../supabase/migrations/202610280001_watch_parties.
 const sql = await readFile(migrationUrl, 'utf8')
 const distanceSql = await readFile(new URL('../supabase/migrations/202610290001_postcode_distance.sql', import.meta.url), 'utf8')
 const nearestFirstSql = await readFile(new URL('../supabase/migrations/202611010001_list_watch_parties_by_distance.sql', import.meta.url), 'utf8')
+const idempotencySql = await readFile(new URL('../supabase/migrations/202611020001_watch_party_submission_idempotency.sql', import.meta.url), 'utf8')
 const manageInterest = await readFile(new URL('../supabase/functions/manage-interest/index.js', import.meta.url), 'utf8')
 const adminFunction = await readFile(new URL('../supabase/functions/admin-watch-parties/index.js', import.meta.url), 'utf8')
+const submitHostFunction = await readFile(new URL('../supabase/functions/submit-watch-party/index.js', import.meta.url), 'utf8')
+const createBookingFunction = await readFile(new URL('../supabase/functions/create-booking/index.js', import.meta.url), 'utf8')
+const sharedHttp = await readFile(new URL('../supabase/functions/_shared/http.js', import.meta.url), 'utf8')
 
 test('capacity reservation locks the party row before counting bookings', () => {
   const reservationFunction = sql.slice(sql.indexOf('create or replace function public.reserve_watch_party'), sql.indexOf('create or replace function public.party_has_capacity'))
@@ -65,4 +69,24 @@ test('public discovery lists every available party from closest to furthest', ()
   assert.doesNotMatch(nearestFirstSql, /st_dwithin/i)
   assert.match(nearestFirstSql, /grant execute on function public\.list_available_watch_parties_by_distance[\s\S]*to service_role/i)
   assert.doesNotMatch(nearestFirstSql, /grant execute on function public\.list_available_watch_parties_by_distance[\s\S]*to (anon|authenticated)/i)
+})
+
+test('host retries cannot create duplicate applications', () => {
+  assert.match(idempotencySql, /add column submission_key uuid/i)
+  assert.match(idempotencySql, /unique index watch_parties_submission_key_unique/i)
+  assert.match(submitHostFunction, /submission_key: submissionKey/i)
+  assert.match(submitHostFunction, /error\?\.code === '23505'/i)
+})
+
+test('booking retries return the existing registration instead of duplicating attendance', () => {
+  assert.match(createBookingFunction, /reservationError\?\.code === '23505'/i)
+  assert.match(createBookingFunction, /duplicate: true/i)
+  assert.match(createBookingFunction, /from\('registrations'\)/i)
+})
+
+test('Edge Functions return structured errors with correlation identifiers', () => {
+  assert.match(sharedHttp, /x-request-id/i)
+  assert.match(sharedHttp, /requestId/i)
+  assert.match(sharedHttp, /error: \{ code, message:/i)
+  assert.doesNotMatch(sharedHttp, /\{ error: safeMessage \}/i)
 })

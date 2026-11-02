@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
 import FormField, { fieldClassName } from './FormField'
 import InlineNotice from './InlineNotice'
-import { radiusOptions } from '../../lib/watchPartyRules'
+import { normaliseUkPostcode, radiusOptions, validateUkPostcode } from '../../lib/watchPartyRules'
 import { watchPartiesApi } from '../../lib/watchPartiesApi'
 
 function InterestForm({ initialPostcode = '', initialRadius = 10 }) {
@@ -29,11 +29,21 @@ function InterestForm({ initialPostcode = '', initialRadius = 10 }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (status === 'submitting') return
+
+    const postcodeError = validateUkPostcode(values.postcode)
+    if (postcodeError) {
+      setError(postcodeError)
+      return
+    }
+
+    const formattedPostcode = normaliseUkPostcode(values.postcode)
+    setValues((current) => ({ ...current, postcode: formattedPostcode }))
     setStatus('submitting')
     setError('')
 
     try {
-      await watchPartiesApi.registerInterest(values)
+      await watchPartiesApi.registerInterest({ ...values, postcode: formattedPostcode })
       setStatus('success')
     } catch (submissionError) {
       setError(submissionError.message)
@@ -57,7 +67,7 @@ function InterestForm({ initialPostcode = '', initialRadius = 10 }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='rounded-2xl border border-black/10 bg-white p-6 shadow-sm sm:p-8'>
+    <form onSubmit={handleSubmit} aria-busy={status === 'submitting'} className='rounded-2xl border border-black/10 bg-white p-6 shadow-sm sm:p-8'>
       <div className='grid gap-6 sm:grid-cols-2'>
         <FormField label='Name' name='interest-name' required>
           <input id='interest-name' name='name' value={values.name} onChange={updateValue} required maxLength='100' autoComplete='name' className={fieldClassName} />
@@ -91,7 +101,7 @@ function InterestForm({ initialPostcode = '', initialRadius = 10 }) {
       {error && <div className='mt-5'><InlineNotice tone='error'>{error}</InlineNotice></div>}
 
       <button disabled={status === 'submitting'} className='mt-6 w-full rounded-full bg-black px-6 py-3.5 font-bold text-white transition hover:bg-black/80 disabled:cursor-wait disabled:opacity-60 sm:w-auto'>
-        {status === 'submitting' ? 'Saving your request…' : 'Notify Me When One Opens'}
+        {status === 'submitting' ? 'Saving your request…' : error ? 'Try Again' : 'Notify Me When One Opens'}
       </button>
     </form>
   )

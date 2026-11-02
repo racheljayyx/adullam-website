@@ -66,7 +66,12 @@ Deno.serve(async (request) => {
         html: emailFrame(`<h1 style="font-size:28px;line-height:1.2;margin:0 0 18px">Confirm your email</h1><p>Hi ${escapeHtml(name)},</p><p>Confirm that you would like watch-party alerts within ${radiusMiles} miles of ${escapeHtml(geocoded.postcode)}. This link expires in 24 hours.</p>${button('Confirm my alerts', verifyUrl)}<p style="font-size:13px;color:#666">If you did not request this, you can ignore this message. <a href="${escapeHtml(preferencesUrl)}">Manage preferences</a>.</p>`, 'Confirm your watch-party availability alerts.'),
       })
     } catch (emailError) {
-      throw Object.assign(new Error('We saved your request but could not send the verification email. Please try again shortly.'), { status: 503, cause: emailError })
+      throw Object.assign(new Error('Verification email delivery failed.'), {
+        status: 503,
+        code: 'email_delivery_failed',
+        publicMessage: 'We saved your request but could not send the verification email. Please try again shortly.',
+        cause: emailError,
+      })
     }
 
     return jsonResponse(request, { submitted: true, verificationRequired: true }, 201)

@@ -9,6 +9,7 @@ import { watchPartiesApi } from '../lib/watchPartiesApi'
 
 function WatchPartyDetails() {
   const { id } = useParams()
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const [party, setParty] = useState(null)
   const [pageStatus, setPageStatus] = useState('loading')
   const [pageError, setPageError] = useState('')
@@ -33,7 +34,7 @@ function WatchPartyDetails() {
         }
       })
     return () => { active = false }
-  }, [id])
+  }, [id, loadAttempt])
 
   const updateValue = (event) => {
     const { name, value, type, checked } = event.target
@@ -52,7 +53,7 @@ function WatchPartyDetails() {
     setBookingError('')
     try {
       const response = await watchPartiesApi.book({ partyId: id, ...values })
-      setConfirmation({ ...response.registration, emailSent: response.emailSent })
+      setConfirmation({ ...response.registration, emailSent: response.emailSent, duplicate: Boolean(response.duplicate) })
       setParty((current) => ({ ...current, remaining_capacity: response.remainingCapacity }))
       setBookingStatus('success')
     } catch (error) {
@@ -70,8 +71,11 @@ function WatchPartyDetails() {
 
   if (pageStatus === 'error' || !party) {
     return (
-      <WatchPartyShell eyebrow='Watch party' title='This party is unavailable' description={pageError || 'It may have closed or no longer be publicly listed.'} compact>
-        <Link to='/watch-parties' className='mt-8 inline-flex rounded-full bg-black px-6 py-3 font-bold text-white'>Find another party</Link>
+      <WatchPartyShell eyebrow='Watch party' title="We couldn't load this watch party" description={pageError || 'It may have closed or no longer be publicly listed.'} compact>
+        <div className='mt-8 flex flex-wrap gap-3'>
+          <button onClick={() => { setPageError(''); setPageStatus('loading'); setLoadAttempt((attempt) => attempt + 1) }} className='rounded-full bg-black px-6 py-3 font-bold text-white'>Try Again</button>
+          <Link to='/watch-parties' className='rounded-full border border-black px-6 py-3 font-bold'>Find another party</Link>
+        </div>
       </WatchPartyShell>
     )
   }
@@ -106,10 +110,10 @@ function WatchPartyDetails() {
             <div className='flex h-full flex-col justify-center' role='status'>
               <CheckCircleIcon className='h-12 w-12 text-[#C0AA95]' aria-hidden='true' />
               <h2 className='mt-5 text-3xl font-light'>Your spaces are confirmed.</h2>
-              <p className='mt-4 leading-7 text-white/65'>We reserved {pluraliseSpaces(confirmation.group_size)}. {confirmation.emailSent ? `Booking details have been sent to ${confirmation.email}.` : 'Your booking is safe, but the confirmation email could not be delivered. Please contact the organiser team if you need help.'}</p>
+              <p className='mt-4 leading-7 text-white/65'>{confirmation.duplicate ? `Your existing booking for ${pluraliseSpaces(confirmation.group_size)} is safe, and no duplicate registration was created.` : `We reserved ${pluraliseSpaces(confirmation.group_size)}. ${confirmation.emailSent ? `Booking details have been sent to ${confirmation.email}.` : 'Your booking is safe, but the confirmation email could not be delivered. Please contact the organiser team if you need help.'}`}</p>
             </div>
           ) : (
-            <form onSubmit={handleBooking}>
+            <form onSubmit={handleBooking} aria-busy={bookingStatus === 'submitting'}>
               <p className='text-xs font-bold uppercase tracking-[0.2em] text-[#C0AA95]'>Reserve your place</p>
               <h2 className='mt-4 text-3xl font-light'>Join this party</h2>
               <div className='mt-7 space-y-5 [&_label]:text-white [&_input]:border-white/20 [&_input]:bg-white [&_input]:text-black'>
@@ -120,7 +124,7 @@ function WatchPartyDetails() {
               <div className='absolute -left-[10000px] top-auto h-px w-px overflow-hidden' aria-hidden='true'><label htmlFor='booking-website'>Website</label><input id='booking-website' name='website' value={values.website} onChange={updateValue} tabIndex='-1' autoComplete='off' /></div>
               <label className='mt-5 flex cursor-pointer items-start gap-3 text-sm leading-6 text-white/65'><input name='consent' type='checkbox' checked={values.consent} onChange={updateValue} required className='mt-1 h-4 w-4 accent-[#C0AA95]' /><span>I consent to my details being used to administer this booking and send essential event emails.</span></label>
               {bookingError && <div className='mt-5'><InlineNotice tone='error'>{bookingError}</InlineNotice></div>}
-              <button disabled={bookingStatus === 'submitting'} className='mt-6 w-full rounded-full bg-[#C0AA95] px-6 py-3.5 font-bold text-black hover:bg-[#D2BEAB] disabled:cursor-wait disabled:opacity-60'>{bookingStatus === 'submitting' ? 'Reserving…' : 'Confirm Registration'}</button>
+              <button disabled={bookingStatus === 'submitting'} className='mt-6 w-full rounded-full bg-[#C0AA95] px-6 py-3.5 font-bold text-black hover:bg-[#D2BEAB] disabled:cursor-wait disabled:opacity-60'>{bookingStatus === 'submitting' ? 'Reserving…' : bookingError ? 'Try Again' : 'Confirm Registration'}</button>
             </form>
           )}
         </div>

@@ -24,7 +24,35 @@ Deno.serve(async (request) => {
       p_watch_party_id: partyId, p_attendee_name: name, p_attendee_email: email,
       p_group_size: groupSize, p_consented_at: new Date().toISOString(),
     }).single()
-    if (reservationError) throw Object.assign(new Error(reservationError.message), { status: reservationError.code === '23505' ? 409 : 400 })
+    if (reservationError?.code === '23505') {
+      const [{ data: existing, error: existingError }, { data: listing, error: listingError }] = await Promise.all([
+        admin.from('registrations').select('id, attendee_email, group_size').eq('watch_party_id', partyId).eq('attendee_email', email).eq('status', 'confirmed').maybeSingle(),
+        admin.from('public_watch_parties').select('remaining_capacity').eq('id', partyId).maybeSingle(),
+      ])
+      if (existingError) throw existingError
+      if (listingError) throw listingError
+      if (existing && listing) {
+        return jsonResponse(request, {
+          registration: { id: existing.id, email: existing.attendee_email, group_size: existing.group_size },
+          remainingCapacity: listing.remaining_capacity,
+          emailSent: null,
+          duplicate: true,
+        }, 200)
+      }
+    }
+    if (reservationError) {
+      const controlledMessage = [
+        'This email already has a registration for this watch party.',
+        'This watch party is not accepting registrations.',
+        'Choose a valid group size.',
+      ].find((message) => reservationError.message.includes(message))
+      const capacityMessage = reservationError.message.match(/Only \d+ spaces remain\./)?.[0]
+      throw Object.assign(new Error('Reservation failed.'), {
+        status: 400,
+        code: 'booking_unavailable',
+        publicMessage: controlledMessage || capacityMessage || 'We could not reserve those spaces. Please refresh the party and try again.',
+      })
+    }
 
     const { data: party, error: partyError } = await admin.from('watch_parties').select('name, city, neighbourhood').eq('id', partyId).single()
     if (partyError) throw partyError
@@ -50,4 +78,3 @@ Deno.serve(async (request) => {
     return errorResponse(request, error)
   }
 })
-

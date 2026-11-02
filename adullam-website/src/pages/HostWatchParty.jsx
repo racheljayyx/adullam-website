@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { CheckCircleIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import WatchPartyShell from '../components/watch-parties/WatchPartyShell'
 import FormField, { fieldClassName } from '../components/watch-parties/FormField'
 import InlineNotice from '../components/watch-parties/InlineNotice'
-import { watchPartiesApi } from '../lib/watchPartiesApi'
+import { normaliseUkPostcode, validateUkPostcode } from '../lib/watchPartyRules'
+import { createRequestId, watchPartiesApi } from '../lib/watchPartiesApi'
 
 const initialValues = {
   hostName: '', email: '', phone: '', partyName: '', city: '', neighbourhood: '',
@@ -12,10 +13,12 @@ const initialValues = {
 }
 
 function HostWatchParty() {
+  const submissionId = useRef(createRequestId())
   const [values, setValues] = useState(initialValues)
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
   const [emailSent, setEmailSent] = useState(true)
+  const [duplicatePrevented, setDuplicatePrevented] = useState(false)
 
   const updateValue = (event) => {
     const { name, value, type, checked } = event.target
@@ -24,11 +27,22 @@ function HostWatchParty() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (status === 'submitting') return
+
+    const postcodeError = validateUkPostcode(values.postcode)
+    if (postcodeError) {
+      setError(postcodeError)
+      return
+    }
+
+    const formattedPostcode = normaliseUkPostcode(values.postcode)
+    setValues((current) => ({ ...current, postcode: formattedPostcode }))
     setStatus('submitting')
     setError('')
     try {
-      const response = await watchPartiesApi.submitHost(values)
+      const response = await watchPartiesApi.submitHost({ ...values, postcode: formattedPostcode, requestId: submissionId.current })
       setEmailSent(response.emailSent)
+      setDuplicatePrevented(Boolean(response.duplicate))
       setStatus('success')
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (submissionError) {
@@ -43,7 +57,7 @@ function HostWatchParty() {
         <div className='mt-8 max-w-2xl rounded-2xl border border-emerald-200 bg-white p-7 sm:p-10' role='status'>
           <CheckCircleIcon className='h-12 w-12 text-emerald-700' aria-hidden='true' />
           <h2 className='mt-5 text-2xl font-semibold'>Your watch party is awaiting review</h2>
-          <p className='mt-3 leading-7 text-black/65'>The organiser team will review your application before anything appears publicly. {emailSent ? 'We have also sent a receipt to your email address.' : 'Your application is safe, but the email receipt could not be delivered.'}</p>
+          <p className='mt-3 leading-7 text-black/65'>The organiser team will review your application before anything appears publicly. {duplicatePrevented ? 'Your earlier submission was found, so no duplicate application was created.' : emailSent ? 'We have also sent a receipt to your email address.' : 'Your application is safe, but the email receipt could not be delivered.'}</p>
         </div>
       </WatchPartyShell>
     )
@@ -57,7 +71,7 @@ function HostWatchParty() {
       compact
     >
       <div className='mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]'>
-        <form onSubmit={handleSubmit} className='rounded-2xl border border-black/10 bg-white p-6 shadow-sm sm:p-8'>
+        <form onSubmit={handleSubmit} aria-busy={status === 'submitting'} className='rounded-2xl border border-black/10 bg-white p-6 shadow-sm sm:p-8'>
           <div className='grid gap-6 sm:grid-cols-2'>
             <FormField label='Host name' name='host-name' required><input id='host-name' name='hostName' value={values.hostName} onChange={updateValue} required maxLength='100' autoComplete='name' className={fieldClassName} /></FormField>
             <FormField label='Email' name='host-email' required><input id='host-email' name='email' value={values.email} onChange={updateValue} required maxLength='254' type='email' autoComplete='email' className={fieldClassName} /></FormField>
@@ -84,7 +98,7 @@ function HostWatchParty() {
           <div className='absolute -left-[10000px] top-auto h-px w-px overflow-hidden' aria-hidden='true'><label htmlFor='host-website'>Website</label><input id='host-website' name='website' value={values.website} onChange={updateValue} tabIndex='-1' autoComplete='off' /></div>
           <label className='mt-6 flex cursor-pointer items-start gap-3 rounded-xl bg-[#F7F3EF] p-4 text-sm leading-6 text-black/70'><input name='consent' type='checkbox' checked={values.consent} onChange={updateValue} required className='mt-1 h-4 w-4 accent-black' /><span>I consent to the organiser team using these details to review and administer my watch party application.</span></label>
           {error && <div className='mt-5'><InlineNotice tone='error'>{error}</InlineNotice></div>}
-          <button disabled={status === 'submitting'} className='mt-6 w-full rounded-full bg-black px-6 py-3.5 font-bold text-white hover:bg-black/80 disabled:cursor-wait disabled:opacity-60 sm:w-auto'>{status === 'submitting' ? 'Submitting…' : 'Submit for Approval'}</button>
+          <button disabled={status === 'submitting'} className='mt-6 w-full rounded-full bg-black px-6 py-3.5 font-bold text-white hover:bg-black/80 disabled:cursor-wait disabled:opacity-60 sm:w-auto'>{status === 'submitting' ? 'Submitting…' : error ? 'Try Again' : 'Submit for Approval'}</button>
         </form>
 
         <aside className='h-fit rounded-2xl bg-black p-6 text-white lg:sticky lg:top-6'>
