@@ -98,7 +98,7 @@ const programs = [
 
 const upcomingRetreats = [
   { month: 'April', dates: '2–4 April 2027' },
-  { month: 'June', dates: '4–6 June 2027' },
+  { month: 'July', dates: '3–4 July 2027' },
   { month: 'September', dates: '3–5 September 2027' },
   { month: 'December', dates: '3–5 December 2027' },
 ]
